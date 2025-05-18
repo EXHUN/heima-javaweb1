@@ -1,31 +1,29 @@
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
+import axios from "axios";
 
 // 表单组件相关
 const emp = ref({ name: '', gender: '', job: '' })
 
-// 查询
-const search = () => {
+// 钩子函数(当页面加载时，执行查询)
+onMounted(() => {
+    search()
+})
 
+// 查询
+const search = async () => {
+    const result = await axios.get(`https://web-server.itheima.net/emps/list?name=${emp.value.name}&gender=${emp.value.gender}&job=${emp.value.job}`)
+    empList.value = result.data.data
 }
 
 // 清空
 const clear = () => {
-
+    emp.value = { name: '', gender: '', job: '' }
+    search()
 }
 
 // 表格相关
-const empList = [
-    {
-        "id": 1,
-        "name": "谢逊",
-        "image": "https://web-framework.oss-cn-hangzhou.aliyuncs.com/2023/4.jpg",
-        "gender": 1,
-        "job": "1",
-        "entrydate": "2023-06-09",
-        "updatetime": "2025-04-15T23:42:24"
-    }
-]
+const empList = ref([]);
 
 
 </script>
@@ -64,9 +62,27 @@ const empList = [
         <el-table :data="empList" border style="width: 100%">
             <el-table-column prop="id" label="ID" width="100" align="center" />
             <el-table-column prop="name" label="姓名" width="120" align="center" />
-            <el-table-column prop="image" label="头像" width="180" align="center" />
-            <el-table-column prop="gender" label="性别" width="180" align="center" />
-            <el-table-column prop="job" label="职位" width="180" align="center" />
+            <el-table-column label="头像" width="180" align="center">
+                <template #default="scope">
+                    <img :src="scope.row.image" height="40px">
+                </template>
+            </el-table-column>
+            <el-table-column label="性别" width="180" align="center">
+                <template #default="scope">
+                    {{ scope.row.gender == 1 ? '男' : '女' }}
+                </template>
+            </el-table-column>
+            <el-table-column label="职位" width="180" align="center">
+                <template #default="scope">
+                    <span v-if="scope.row.job == 1">班主任</span>
+                    <span v-else-if="scope.row.job == 2">讲师</span>
+                    <span v-else-if="scope.row.job == 3">学工主管</span>
+                    <span v-else-if="scope.row.job == 4">教研主管</span>
+                    <span v-else-if="scope.row.job == 5">咨询师</span>
+                    <span v-else>其他</span>
+
+                </template>
+            </el-table-column>
             <el-table-column prop="entrydate" label="入职日期" width="180" align="center" />
             <el-table-column prop="updatetime" label="更新时间" align="center" />
         </el-table>
@@ -74,9 +90,9 @@ const empList = [
 </template>
 
 <style scoped>
-    #container {
-        width: 70%;
-        margin-left: 15%;
-        margin-right: 15%;
-    }
+#container {
+    width: 70%;
+    margin-left: 15%;
+    margin-right: 15%;
+}
 </style>
