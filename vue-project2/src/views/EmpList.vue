@@ -80,7 +80,6 @@ const empList = ref([]);
                     <span v-else-if="scope.row.job == 4">教研主管</span>
                     <span v-else-if="scope.row.job == 5">咨询师</span>
                     <span v-else>其他</span>
-
                 </template>
             </el-table-column>
             <el-table-column prop="entrydate" label="入职日期" width="180" align="center" />
